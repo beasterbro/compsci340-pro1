@@ -1,24 +1,28 @@
-import socket, requests, sys
+import socket 
+import sys
 exitCode = '400'
-url = ''
+url = "www.example.com" #sys.argv[1]
 PORT = 80
 # STD out only gets body of response, not headers
 # any other message goes to STD err
 # listen and send over port 80
 
-url = url
+
+#gotta build HTTP stuff ourselve from header on down
+response = ''
 # with is easier try catch that auto closes sthings
 # AF_INET is address protocol family
+print(url)
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # SOCK_STREAM specifies we are using TCP
-    s.bind((url, PORT))
-    s.listen()
-    print('Searching for COnnection')
-    conn, addr = s.accept()
-    with conn:
-        print(f'Conncted w/ {addr}')
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            conn.sendall(data)
+    #s.bind((url, PORT))
+    s.connect((url,PORT))
+    #addr = s.getaddrinfo()
+    s.send(b"GET / HTTP/1.1\r\nHost:www.example.com\r\n\r\n")   
+    # while True:
+    #     window = s.recv(4096)
+    #     if len(window) == 0:
+    #         break
+    # response += window
+    response = s.recv(4096)
+    print(response.decode())
