@@ -18,7 +18,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     #s.bind((url, PORT))
     s.connect((url,PORT))
     #addr = s.getaddrinfo()
-    s.send(b"GET / HTTP/1.1\r\nHost:www.example.com\r\n\r\n")   
+    req = "GET / HTTP/1.1\r\nHost:{}\r\n\r\n".format(url)
+    s.send(req.encode('utf-8'))   
     # while True:
     #     window = s.recv(4096)
     #     if len(window) == 0:
