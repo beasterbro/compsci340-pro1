@@ -1,6 +1,6 @@
 import socket
 import sys
-from tempfile import SpooledTemporaryFile
+
 exitCode = '400'
 url = sys.argv[1]  # sys.argv[1]
 PORT = 80
@@ -18,7 +18,6 @@ else:
 response = ''
 # with is easier try catch that auto closes sthings
 # AF_INET is address protocol family
-print(url)
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # SOCK_STREAM specifies we are using TCP
     #s.bind((url, PORT))
@@ -32,4 +31,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     #         break
     # response += window
     response = s.recv(4096)
-    print(response.decode())
+    tempOut = response.decode()
+    print('<!'+tempOut.split('<!')[1])
+    #print(response.decode())
+    print(url)
+
