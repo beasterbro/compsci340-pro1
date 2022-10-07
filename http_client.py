@@ -76,16 +76,15 @@ def makeRequest(url):
             print(body)
         elif responseCode == '301' or responseCode == '302':
             tempUrl = getUrl(header)
-            #sys.stderr.write("Redirected to: " + tempUrl)
-            print("Redirr: " +tempUrl)
+            sys.stderr.write("Redirected to: " + tempUrl)
             makeRequest(tempUrl.split('\r')[0])
-        else:
+        elif responseCode > 400:
             sys.stderr.write("Error Connecting with response: " + responseCode)
+            print(body)
+            sys.exit(1)
         if responseCode != '302':
-            if response:
+            if responseCode < 400:
                 sys.exit(0)
-            else:
-                sys.exit(1)
         # print(response.decode())
 
 makeRequest(URL)
