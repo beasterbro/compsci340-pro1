@@ -34,7 +34,7 @@ def getStatusCode(header):
 # with is easier try catch that auto closes sthings
 # AF_INET is address protocol family
 def makeRequest(url):
-    if 'http://' in url:
+    if 'http://' or 'https://'in url:
         split = url.split('/')
         host = split[2]
         spot = split[3]
@@ -64,6 +64,8 @@ def makeRequest(url):
         elif responseCode == '301' or responseCode == '302':
             sys.stderr.write("Redirected to: " + getUrl(header))
             makeRequest(getUrl(header))
+        else:
+            sys.stderr.write("Error Connecting with response: " + responseCode)
 
         print()
         if response:
