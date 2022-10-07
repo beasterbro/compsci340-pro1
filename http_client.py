@@ -8,6 +8,7 @@ from requests import head
 exitCode = '400'
 URL = sys.argv[1]  # sys.argv[1]
 port = 80
+redirectCount = 0
 # STD out only gets body of response, not headers
 # any other message goes to STD err
 # listen and send over port 80
@@ -75,9 +76,14 @@ def makeRequest(url):
             body = getBody(tempResp)
             print(body)
         elif responseCode == '301' or responseCode == '302':
-            tempUrl = getUrl(header)
-            sys.stderr.write("Redirected to: " + tempUrl)
-            makeRequest(tempUrl.split('\r')[0])
+            global redirectCount
+            redirectCount+=1
+            if redirectCount < 10:
+                tempUrl = getUrl(header)
+                sys.stderr.write("Redirected to: " + tempUrl)
+                makeRequest(tempUrl.split('\r')[0])
+            else:
+                sys.exit(-1)
         elif responseCode > 400:
             sys.stderr.write("Error Connecting with response: " + responseCode)
             print(body)
