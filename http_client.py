@@ -39,7 +39,7 @@ def getStatusCode(header):
 # AF_INET is address protocol family
 def makeRequest(url):
     print("start: "+url)
-    if 'http://' or 'https://'in url:
+    if 'http://' or 'https://'in url:#TODO: Donta accept https pages
         split = url.split('/')
         print(split)
         host = split[2]
