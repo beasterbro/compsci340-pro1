@@ -1,3 +1,4 @@
+from glob import glob
 import socket
 import sys
 from webbrowser import get
@@ -6,7 +7,7 @@ from requests import head
 
 exitCode = '400'
 URL = sys.argv[1]  # sys.argv[1]
-PORT = 80
+port = 80
 # STD out only gets body of response, not headers
 # any other message goes to STD err
 # listen and send over port 80
@@ -41,6 +42,11 @@ def makeRequest(url):
         split = url.split('/')
         print(split)
         host = split[2]
+        #cannot do this without threading mutliple ports
+        # if ':' in host:
+        #     global port
+        #     port = int(host.split(':')[1])
+        #     host = host.split(':')[0]
         spot = split[3]
     else:
        # print("else: "+url)
@@ -50,7 +56,7 @@ def makeRequest(url):
         # SOCK_STREAM specifies we are using TCP
         #s.bind((url, PORT))
         #print(host + '\n')
-        s.connect((host, PORT))
+        s.connect((host, port))
         #addr = s.getaddrinfo()
         req = "GET /{} HTTP/1.1\r\nHost:{}\r\n\r\n".format(spot, host)
         s.send(req.encode('utf-8'))
