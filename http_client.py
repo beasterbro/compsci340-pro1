@@ -18,12 +18,17 @@ response = ''
 
 
 def getHeader(resp):
-    return resp.split('<!')[0]
+    return resp.split('\r\n\r\n')[0]
 
 
 def getBody(resp):
-    return '<!' + resp.split('<!')[1]
+    return resp.split('\r\n\r\n')[1]
 
+
+def getContentType(header):
+     for s in header.split('\n'):
+        if "Content-Type: " in s:
+            return s
 
 def getUrl(header):
     for s in header.split('\n'):
@@ -34,7 +39,8 @@ def getUrl(header):
 def getStatusCode(header):
     return header[9:12]
 
-
+def isTopLevel(url):
+    return len(url.split('/'))<4
 # with is easier try catch that auto closes sthings
 # AF_INET is address protocol family
 def makeRequest(url):
@@ -42,11 +48,14 @@ def makeRequest(url):
         split = url.split('/')
         host = split[2]
         #cannot do this without threading mutliple ports
-        # if ':' in host:
-        #     global port
-        #     port = int(host.split(':')[1])
-        #     host = host.split(':')[0]
-        spot = split[3]
+        if ':' in host:
+            global port
+            port = int(host.split(':')[1])
+            host = host.split(':')[0]
+        if isTopLevel(url):
+            spot = ''
+        else:
+            spot = split[3]
     elif 'https://' in url:
         sys.stderr.write("No security allowed >:(")
         sys.exit(-1)
@@ -67,15 +76,19 @@ def makeRequest(url):
         #     if len(window) == 0:
         #         break
         # response += window
-        response = s.recv(4096)
-
+        response = s.recv(16000000)
         tempResp = response.decode()
         header = getHeader(tempResp)
+        contentType = getContentType(header)
         responseCode = getStatusCode(header)
         #print(header)
         body = getBody(tempResp)
+        if not 'text/html' in contentType:
+            sys.stderr.write("Incorrect Content type: " +contentType )
+            sys.exit(-1)
         if responseCode == '200':
             print(body)
+            pass
         elif responseCode == '301' or responseCode == '302':
             global redirectCount
             redirectCount+=1
@@ -90,7 +103,7 @@ def makeRequest(url):
             print(body)
             sys.exit(1)
         if responseCode != '302':
-            if responseCode < 400:
+            if int(responseCode) < 400:
                 sys.exit(0)
         # print(response.decode())
 
