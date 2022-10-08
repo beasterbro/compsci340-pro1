@@ -71,17 +71,22 @@ def makeRequest(url):
         #addr = s.getaddrinfo()
         req = "GET /{} HTTP/1.1\r\nHost:{}\r\n\r\n".format(spot, host)
         s.send(req.encode('utf-8'))
+        response = b""
+        while True:
+            window = s.recv(4096)
+            if len(window) == 0:
+                break
+            response += window
         # while True:g http://insecure.stevetarzia.com/basic.html u
         #     window = s.recv(4096)
         #     if len(window) == 0:
         #         break
         # response += window
-        response = s.recv(16000000)
         tempResp = response.decode()
         header = getHeader(tempResp)
         contentType = getContentType(header)
         responseCode = getStatusCode(header)
-        #print(header)
+        #print(tempResp)
         body = getBody(tempResp)
         if not 'text/html' in contentType:
             sys.stderr.write("Incorrect Content type: " +contentType )
@@ -94,7 +99,8 @@ def makeRequest(url):
             redirectCount+=1
             if redirectCount < 10:
                 tempUrl = getUrl(header)
-                sys.stderr.write("Redirected to: " + tempUrl)
+                sys.stderr.write("Redirected to: " + tempUrl + '\n')
+                print(tempUrl.split('\r')[0])
                 makeRequest(tempUrl.split('\r')[0])
             else:
                 sys.exit(-1)
