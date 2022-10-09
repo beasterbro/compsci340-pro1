@@ -59,7 +59,7 @@ def makeRequest(url):
        # print("else: "+url)
         host = url
         spot = ''
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:#http://insecure.stevetarzia.com/basic.html
         # SOCK_STREAM specifies we are using TCP
         #s.bind((url, PORT))
         #print(host + '\n')
@@ -73,16 +73,11 @@ def makeRequest(url):
             if len(window) == 0:
                 break
             response += window
-        # while True:g http://insecure.stevetarzia.com/basic.html u
-        #     window = s.recv(4096)
-        #     if len(window) == 0:
-        #         break
-        # response += window
         tempResp = response.decode()
         header = getHeader(tempResp)
         contentType = getContentType(header)
         responseCode = getStatusCode(header)
-        #print(tempResp)
+        #print(header)
         body = getBody(tempResp)
         if not 'text/html' in contentType:
             sys.stderr.write("Incorrect Content type: " +contentType )
