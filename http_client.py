@@ -1,9 +1,5 @@
-from glob import glob
 import socket
 import sys
-from webbrowser import get
-
-from requests import head
 
 exitCode = '400'
 URL = sys.argv[1]  # sys.argv[1]
