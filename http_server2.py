@@ -15,7 +15,6 @@ responseStatus = ''
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
-    print(split[0])
     if filename in split[0]:
         if ('.htm' or '.html') in split[0]:
             return 200
@@ -75,7 +74,7 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         # SOCK_STREAM specifies we are using TCP
         s.bind(('', port))  # listen to all addresses
-        #s.setblocking(0)
+        s.setblocking(0)
         s.listen(5)
         readList = [s]
         outputs = []
@@ -83,9 +82,9 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
         # print(conn)
         global responseCode
         while readList:
-            readList = [s]
-            conn, addr = s.accept()
-            readList.append(conn)
+            #readList = [s]
+            #conn, addr = s.accept()
+            #readList.append(conn)
             readable, writable, exceptional = select.select(readList,
                                                     outputs,
                                                     readList)
@@ -103,6 +102,7 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
                     connection.setblocking(0)
                     readList.append(connection)
                     outgoingqueue[connection] = queue.Queue()
+                    print(outgoingqueue)
                     # Give the connection a queue for data
                     # we want to send
                     #outgoingqueue[connection] = queue.Queue()
@@ -114,7 +114,7 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
                         processRequest(data,tempRead)
                         #outgoingqueue[tempRead].put(data)
                         # Add output channel for response
-                        if s not in outputs:
+                        if tempRead not in outputs:
                          outputs.append(tempRead)
                     else: #no data
                         if tempRead in outputs:
@@ -123,20 +123,23 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
                         tempRead.close()
                         del outgoingqueue[tempRead]
             # Handle outputs
-            for s in writable:
+            for w in writable:
                 try:
-                    next_msg = outgoingqueue[s].get_nowait()
+                    pass
+                    #print(outgoingqueue)
+                    next_msg = outgoingqueue[w].get_nowait()
                 except queue.Empty:
             # No messages waiting so stop checking for writability.
-                    print >>sys.stderr, 'output queue for', s.getpeername(), 'is empty'
-                    outputs.remove(s)
+                    #print >>sys.stderr, 'output queue for', w.getpeername(), 'is empty'
+                    outputs.remove(w)
                 else:
-                    print >>sys.stderr, 'sending "%s" to %s' % (next_msg, s.getpeername())
+                    #print >>sys.stderr, 'sending "%s" to %s' % (next_msg, w.getpeername())
+                    #processRequest(data,tempRead)
                     tempRead.send(next_msg)
 
             # Handle "exceptional conditions"
             for e in exceptional:
-                print >>sys.stderr, 'handling exceptional condition for', s.getpeername()
+                #print >>sys.stderr, 'handling exceptional condition for', e.getpeername()
                 # Stop listening for input on the connection
                 readList.remove(e)
                 if e in outputs:
@@ -144,7 +147,7 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
                     e.close()
 
                 # Remove message queue
-                del outgoingqueue[s]
+                del outgoingqueue[e]
             #TODO:Fill in the blank above this
 
 def processRequest(data,conn):
@@ -153,7 +156,7 @@ def processRequest(data,conn):
         f = open(filename + '.html', 'r')
         body = f.read()
         # Todo: for some reason in the first line of the file there is a different invisible character
-        print(body)
+        #print(body)
         head = makeHeader(body)
         conn.send(head.encode(encoding="utf-8"))
         # Send html response + header

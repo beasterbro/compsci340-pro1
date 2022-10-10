@@ -91,7 +91,7 @@ def makeRequest(url):
             if redirectCount < 10:
                 tempUrl = getUrl(header)
                 sys.stderr.write("Redirected to: " + tempUrl + '\n')
-                print(tempUrl.split('\r')[0])
+                #print(tempUrl.split('\r')[0])
                 makeRequest(tempUrl.split('\r')[0])
             else:
                 sys.exit(-1)

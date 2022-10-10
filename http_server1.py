@@ -12,7 +12,7 @@ responseStatus = ''
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
-    print(split[0])
+    #print(split[0])
     if filename in split[0]:
         if ('.htm' or '.html') in split[0]:
             return 200
