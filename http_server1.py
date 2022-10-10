@@ -2,7 +2,6 @@ from fileinput import filename
 import socket
 import sys
 import time
-from urllib import response
 
 filename = 'rfc2616'
 head ='';
@@ -80,7 +79,6 @@ def hostFile():#TODO: Somehow check the file they are requesting for
                 f = open(filename + '.html','r')
                 body = f.read()
                 print(body)#Todo: for some reason in the first line of the file there is a different invisible character
-                print(body.encode(encoding="utf-8")[63])
                 head = makeHeader(body)
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
