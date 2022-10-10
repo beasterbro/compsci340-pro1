@@ -95,7 +95,6 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
             # ready for processing
             # Handle readList
             for tempRead in readable:
-
                 if tempRead is s:
                     # A "readable" socket is ready to accept a connection
                     connection, client_address = tempRead.accept()
@@ -123,7 +122,29 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
                         readList.remove(tempRead)
                         tempRead.close()
                         del outgoingqueue[tempRead]
+            # Handle outputs
+            for s in writable:
+                try:
+                    next_msg = outgoingqueue[s].get_nowait()
+                except queue.Empty:
+            # No messages waiting so stop checking for writability.
+                    print >>sys.stderr, 'output queue for', s.getpeername(), 'is empty'
+                    outputs.remove(s)
+                else:
+                    print >>sys.stderr, 'sending "%s" to %s' % (next_msg, s.getpeername())
+                    tempRead.send(next_msg)
 
+            # Handle "exceptional conditions"
+            for e in exceptional:
+                print >>sys.stderr, 'handling exceptional condition for', s.getpeername()
+                # Stop listening for input on the connection
+                readList.remove(e)
+                if e in outputs:
+                    outputs.remove(e)
+                    e.close()
+
+                # Remove message queue
+                del outgoingqueue[s]
             #TODO:Fill in the blank above this
 
 def processRequest(data,conn):
@@ -137,14 +158,14 @@ def processRequest(data,conn):
         conn.send(head.encode(encoding="utf-8"))
         # Send html response + header
         conn.sendall(body.encode(encoding="utf-8"))
-        conn.close()
+        #conn.close()
     else:  # 400 or the sort
         body = 'RIP Connection Error'
         head = makeHeader(body)
         conn.send(head.encode(encoding="utf-8"))
         # Send html response + header
         conn.sendall(body.encode(encoding="utf-8"))
-        conn.close()
+        #conn.close()
 
 
 hostFile()
