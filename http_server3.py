@@ -61,12 +61,12 @@ def processRequest(req):
     return values,values[0]*values[1]*values[2]
 
 def buildJson(values,product):
-    dic = {"operation": "product","operands":str(values),"result":product}
+    dic = {"operation": "product","operands":values,"result":product}
     #return JSONEncoder().encode(dic)
     return json.dumps(dic,indent=4,separators=(',',': '))
 
 
-def hostFunction():#TODO: Somehow check the file they are requesting for
+def hostFunction():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         # SOCK_STREAM specifies we are using TCP
         s.bind(('', port))#listen to all addresses
