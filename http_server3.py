@@ -54,9 +54,10 @@ def processRequest(req):
     return values,values[0]*values[1]*values[2]
 
 def buildJson(values,product):
-    dic = {"operation": "product","operands":values,"result":product}
-    return JSONEncoder().encode(dic)
-    #return json.dumps(dic,indent=4,separators=(',',': '))
+    ops = str(values)
+    dic = {"operation": "product","operands":ops,"result":product}
+    #return JSONEncoder().encode(dic)
+    return json.dumps(dic,indent=4,separators=(',',': '))
 
 
 def hostFunction():#TODO: Somehow check the file they are requesting for
