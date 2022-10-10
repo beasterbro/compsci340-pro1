@@ -43,7 +43,6 @@ def makeRequest(url):
     if 'http://' in url:
         split = url.split('/')
         host = split[2]
-        #cannot do this without threading mutliple ports
         if ':' in host:
             global port
             port = int(host.split(':')[1])
@@ -56,7 +55,6 @@ def makeRequest(url):
         sys.stderr.write("No security allowed >:(")
         sys.exit(-1)
     else:
-       # print("else: "+url)
         host = url
         spot = ''
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:#http://insecure.stevetarzia.com/basic.html
@@ -64,7 +62,6 @@ def makeRequest(url):
         #s.bind((url, PORT))
         #print(host + '\n')
         s.connect((host, port))
-        #addr = s.getaddrinfo()
         req = "GET /{} HTTP/1.1\r\nHost:{}\r\n\r\n".format(spot, host)
         s.send(req.encode('utf-8'))
         response = b""
@@ -77,7 +74,6 @@ def makeRequest(url):
         header = getHeader(tempResp)
         contentType = getContentType(header)
         responseCode = getStatusCode(header)
-        #print(header)
         body = getBody(tempResp)
         if not 'text/html' in contentType:
             sys.stderr.write("Incorrect Content type: " +contentType )
@@ -91,7 +87,6 @@ def makeRequest(url):
             if redirectCount < 10:
                 tempUrl = getUrl(header)
                 sys.stderr.write("Redirected to: " + tempUrl + '\n')
-                #print(tempUrl.split('\r')[0])
                 makeRequest(tempUrl.split('\r')[0])
             else:
                 sys.exit(-1)
@@ -102,6 +97,5 @@ def makeRequest(url):
         if responseCode != '302':
             if int(responseCode) < 400:
                 sys.exit(0)
-        # print(response.decode())
 
 makeRequest(URL)

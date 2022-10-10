@@ -20,7 +20,6 @@ def getResponseCode(req):
     split = req.split('HTTP/')
     if '/product' in split[0]:
         parsed = split[0].split('=')
-        print(parsed)
         if len(parsed) == 4 and hasValues(parsed):
             return 200
         else:  # not .htm or .html
@@ -42,7 +41,7 @@ def makeHeader(body):
                                    for k, v in response_headers.items())
     response_version = 'HTTP/1.1'
     response_status = responseCode
-    response_status_text = responseStatus  # this can be random
+    response_status_text = responseStatus
     # sending all this stuff
     r = '%s %s %s\r\n' % (
         response_version, response_status, response_status_text)
@@ -71,12 +70,10 @@ def hostFunction():
         # SOCK_STREAM specifies we are using TCP
         s.bind(('', port))#listen to all addresses
         s.listen()
-        # print(conn)
         global responseCode
         while True:
             conn, addr = s.accept()
             req = conn.recv(1024)
-            # print(req.decode())
             responseCode = getResponseCode(req.decode())
             if responseCode == 200:
                 val,pro = processRequest(req.decode())

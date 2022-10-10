@@ -1,7 +1,6 @@
 from fileinput import filename
 import socket
 import sys
-import time
 
 filename = 'rfc2616'
 head ='';
@@ -12,7 +11,6 @@ responseStatus = ''
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
-    #print(split[0])
     if filename in split[0]:
         if ('.htm' or '.html') in split[0]:
             return 200
@@ -24,7 +22,6 @@ def getResponseCode(req):
         return 404
 
 def makeHeader(body):
-    currentTime = time.ctime(time.time()) + "\r\n"
     response_headers = {
         'Content-Type': 'text/html; encoding=utf8',
         'Content-Length': len(body),
@@ -34,23 +31,12 @@ def makeHeader(body):
     response_headers_raw = ''.join('%s: %s\r\n' % (k, v) for k, v in response_headers.items())
     response_version = 'HTTP/1.1'
     response_status = responseCode
-    response_status_text = responseStatus # this can be random
+    response_status_text = responseStatus
     # sending all this stuff
     r = '%s %s %s\r\n' % (response_version, response_status, response_status_text)
     r += response_headers_raw
     r+= '\r\n'
     return r
-
-#     HTTP/1.1 200 OK
-# Date: Sun, 09 Oct 2022 20:28:24 GMT
-# Server: Apache/2.4.52 () OpenSSL/1.0.2k-fips PHP/5.4.16
-# Upgrade: h2,h2c
-# Connection: Upgrade
-# Last-Modified: Tue, 07 Jan 2020 23:59:54 GMT
-# ETag: "65-59b9592825280"
-# Accept-Ranges: bytes
-# Content-Length: 101
-# Content-Type: text/html; charset=UTF-8
 
 # Create TCP socket to LISTEN for connections-
 # BIND that socket to the port provided-
@@ -68,17 +54,15 @@ def hostFile():#TODO: Somehow check the file they are requesting for
         # SOCK_STREAM specifies we are using TCP
         s.bind(('', port))#listen to all addresses
         s.listen()
-        #print(conn)
         global responseCode
         while True:
             conn, addr = s.accept()
             req = conn.recv(1024)
-            #print(req.decode())
             responseCode = getResponseCode(req.decode())
             if responseCode == 200:
                 f = open(filename + '.html','r')
                 body = f.read()
-                print(body)#Todo: for some reason in the first line of the file there is a different invisible character
+                print(body)
                 head = makeHeader(body)
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
