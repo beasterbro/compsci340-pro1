@@ -1,3 +1,4 @@
+from ast import parse
 import socket
 import sys
 from json.encoder import JSONEncoder
@@ -8,13 +9,19 @@ port = int(sys.argv[1])
 responseStatus = ''
 
 # GET /product?a=12&b=60& another =0.5
-
+def hasValues(parsed):
+    for s in parsed[1:]:
+        if not any(char.isdigit() for char in s):
+            return False
+    return True
 
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
     if '/product' in split[0]:
-        if len(split[0].split('=')) == 4:
+        parsed = split[0].split('=')
+        print(parsed)
+        if len(parsed) == 4 and hasValues(parsed):
             return 200
         else:  # not .htm or .html
             responseStatus = 'Bad Request'
@@ -54,8 +61,7 @@ def processRequest(req):
     return values,values[0]*values[1]*values[2]
 
 def buildJson(values,product):
-    ops = str(values)
-    dic = {"operation": "product","operands":ops,"result":product}
+    dic = {"operation": "product","operands":str(values),"result":product}
     #return JSONEncoder().encode(dic)
     return json.dumps(dic,indent=4,separators=(',',': '))
 
