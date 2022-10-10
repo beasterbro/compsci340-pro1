@@ -5,7 +5,6 @@ import time
 from urllib import response
 
 filename = 'rfc2616'
-body = ''
 head ='';
 port = int(sys.argv[1])
 responseCode = ''
@@ -15,7 +14,7 @@ def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
     print(split[0])
-    if filename in split[0]:#TODO:fix to not return 200 when not .html
+    if filename in split[0]:
         if ('.htm' or '.html') in split[0]:
             return 200
         else:#not .htm or .html
@@ -80,6 +79,8 @@ def hostFile():#TODO: Somehow check the file they are requesting for
             if responseCode == 200:
                 f = open(filename + '.html','r')
                 body = f.read()
+                print(body)#Todo: for some reason in the first line of the file there is a different invisible character
+                print(body.encode(encoding="utf-8")[63])
                 head = makeHeader(body)
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
