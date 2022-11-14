@@ -11,7 +11,7 @@ head ='';
 port = int(sys.argv[1])
 responseCode = ''
 responseStatus = ''
-
+filename = 'rfc2616.html'
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
@@ -125,18 +125,23 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
 def processRequest(data,conn):
     responseCode = getResponseCode(data.decode())
     if responseCode == 200:
-        f = open(filename + '.html', 'r')
+        f = open(filename, 'r')
         body = f.read()
         head = makeHeader(body)
         conn.send(head.encode(encoding="utf-8"))
         # Send html response + header
         conn.sendall(body.encode(encoding="utf-8"))
-    else:  # 400 or the sort
-        body = 'RIP Connection Error'
+    elif responseCode == 403:  # 400 or the sort
+        body = 'RIP Forbidden'
         head = makeHeader(body)
         conn.send(head.encode(encoding="utf-8"))
         # Send html response + header
         conn.sendall(body.encode(encoding="utf-8"))
-
+    elif responseCode == 404:
+        body = 'RIP Not Found'
+        head = makeHeader(body)
+        conn.send(head.encode(encoding="utf-8"))
+        # Send html response + header
+        conn.sendall(body.encode(encoding="utf-8"))
 
 hostFile()
