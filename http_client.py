@@ -49,8 +49,8 @@ def isTopLevel(url):
 # with is easier try catch that auto closes sthings
 # AF_INET is address protocol family
 def makeRequest(url):
-
-    if '.jpg' or '.png' or '.gif' in url:
+    print(url)
+    if  '.jpg' in url:
         sys.stderr.write("No photos allowed >:(")
         sys.exit(-1)
     elif 'http://' in url:
@@ -78,8 +78,8 @@ def makeRequest(url):
         req = "GET /{} HTTP/1.1\r\nHost:{}\r\n\r\n".format(spot, host)
         s.send(req.encode('utf-8'))
         response = b""
-        #window = s.recv(8096)
-        while True:
+        #window = s.recv(1024)
+        while True:#TODO: images get stuck in this loop for some reason
             window = s.recv(1024)
             if len(window) == 0:
                 break
@@ -89,9 +89,8 @@ def makeRequest(url):
         contentType = getContentType(header)
         responseCode = getStatusCode(header)
         body = getBody(tempResp)
-        print(req)
-        if not 'text/html' in contentType:
-            sys.stderr.write("Incorrect Content type: " +contentType )
+        if 'text/html' not in contentType:
+            sys.stderr.write("Incorrect Content type: " + contentType)
             sys.exit(-1)
         if responseCode == '200':
             print(body)
