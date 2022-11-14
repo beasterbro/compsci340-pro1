@@ -49,7 +49,11 @@ def isTopLevel(url):
 # with is easier try catch that auto closes sthings
 # AF_INET is address protocol family
 def makeRequest(url):
-    if 'http://' in url:
+
+    if '.jpg' or '.png' or '.gif' in url:
+        sys.stderr.write("No photos allowed >:(")
+        sys.exit(-1)
+    elif 'http://' in url:
         split = url.split('/')
         host = split[2]
         if ':' in host:
@@ -59,7 +63,7 @@ def makeRequest(url):
         if isTopLevel(url):
             spot = ''
         else:
-            spot = split[3]
+            spot = '/'.join(split[3:])
     elif 'https://' in url:
         sys.stderr.write("No security allowed >:(")
         sys.exit(-1)
@@ -75,7 +79,7 @@ def makeRequest(url):
         s.send(req.encode('utf-8'))
         response = b""
         #window = s.recv(8096)
-        while True: #len(window) > 0:
+        while True:
             window = s.recv(1024)
             if len(window) == 0:
                 break
@@ -85,6 +89,7 @@ def makeRequest(url):
         contentType = getContentType(header)
         responseCode = getStatusCode(header)
         body = getBody(tempResp)
+        print(req)
         if not 'text/html' in contentType:
             sys.stderr.write("Incorrect Content type: " +contentType )
             sys.exit(-1)
@@ -98,6 +103,7 @@ def makeRequest(url):
                 tempUrl = getUrl(header)
                 sys.stderr.write("Redirected to: " + tempUrl + '\n')
                 makeRequest(tempUrl.split('\r')[0])
+                sys.exit(0)
             else:
                 sys.exit(-1)
         elif int(responseCode) >= 400:
