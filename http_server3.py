@@ -20,6 +20,7 @@ def getResponseCode(req):
     split = req.split('HTTP/')
     if '/product' in split[0]:
         parsed = split[0].split('=')
+        print(parsed)
         if len(parsed) == 4 and hasValues(parsed):
             return 200
         else:  # not .htm or .html

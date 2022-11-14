@@ -15,8 +15,6 @@ filename = 'rfc2616.html'
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
-    print(split[0].split(' ')[1][1:])
-    print(files)
     requestUrl = split[0].split(' ')[1][1:]
     if requestUrl in files:# If the file exists
         if ('.htm' or '.html') in split[0]:
@@ -34,7 +32,7 @@ def makeHeader(body):
     response_headers = {
         'Content-Type': 'text/html; encoding=utf8',
         'Content-Length': len(body),
-        'Connection': 'close',#TODO: do not set to connection clsos here?
+        'Connection': 'keep-alive',#TODO: do not set to connection close here?
     }
     global responseCode
     response_headers_raw = ''.join('%s: %s\r\n' % (k, v)
