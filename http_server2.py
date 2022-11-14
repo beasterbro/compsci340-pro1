@@ -5,7 +5,6 @@ import time
 import select
 import queue
 
-filename = 'rfc2616'
 head = ''
 port = int(sys.argv[1])
 responseCode = ''

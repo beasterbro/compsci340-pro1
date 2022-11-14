@@ -10,6 +10,15 @@ redirectCount = 0
 # listen and send over port 80
 
 # gotta build HTTP stuff ourselves from header on down
+
+class HTMLResp:
+
+    def __init__(self):
+        url = ''
+        header = ''
+        body = ''
+        contentType = ''
+    redirectCount = 0
 response = ''
 
 
@@ -65,8 +74,9 @@ def makeRequest(url):
         req = "GET /{} HTTP/1.1\r\nHost:{}\r\n\r\n".format(spot, host)
         s.send(req.encode('utf-8'))
         response = b""
-        while True:
-            window = s.recv(4096)
+        #window = s.recv(8096)
+        while True: #len(window) > 0:
+            window = s.recv(1024)
             if len(window) == 0:
                 break
             response += window

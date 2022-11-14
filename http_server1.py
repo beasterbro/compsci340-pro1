@@ -1,8 +1,9 @@
 from fileinput import filename
 import socket
 import sys
+import os 
 
-filename = 'rfc2616'
+files = os.listdir('./')
 head ='';
 port = int(sys.argv[1])
 responseCode = ''
@@ -11,10 +12,13 @@ responseStatus = ''
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
-    if filename in split[0]:
+    print(split[0].split(' ')[1][1:])
+    print(files)
+    requestUrl = split[0].split(' ')[1][1:]
+    if requestUrl in files:# If the file exists
         if ('.htm' or '.html') in split[0]:
             return 200
-        else:#not .htm or .html
+        else:#does not end in not .htm or .html
             responseStatus = 'Forbidden'
             return 403
     else:
@@ -67,8 +71,14 @@ def hostFile():#TODO: Somehow check the file they are requesting for
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
                 conn.close()
-            else:#400 or the sort
-                body = 'RIP'
+            elif responseCode==403:#400 or the sort
+                body = 'Forbidden'
+                head = makeHeader(body)
+                conn.send(head.encode(encoding="utf-8"))
+                conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
+                conn.close()
+            else:#404
+                body = 'Not Found'
                 head = makeHeader(body)
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
