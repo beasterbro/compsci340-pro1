@@ -4,17 +4,21 @@ import sys
 import time
 import select
 import queue
+import os 
 
-head = ''
+files = os.listdir('./')
+head ='';
 port = int(sys.argv[1])
 responseCode = ''
 responseStatus = ''
 
-
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
-    if filename in split[0]:
+    print(split[0].split(' ')[1][1:])
+    print(files)
+    requestUrl = split[0].split(' ')[1][1:]
+    if requestUrl in files:# If the file exists
         if ('.htm' or '.html') in split[0]:
             return 200
         else:  # not .htm or .html
@@ -30,7 +34,7 @@ def makeHeader(body):
     response_headers = {
         'Content-Type': 'text/html; encoding=utf8',
         'Content-Length': len(body),
-        'Connection': 'close',
+        'Connection': 'close',#TODO: do not set to connection clsos here?
     }
     global responseCode
     response_headers_raw = ''.join('%s: %s\r\n' % (k, v)

@@ -71,16 +71,22 @@ def hostFile():#TODO: Somehow check the file they are requesting for
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
                 conn.close()
+                sys.exit()
+
             elif responseCode==403:#400 or the sort
                 body = 'Forbidden'
                 head = makeHeader(body)
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
                 conn.close()
+                sys.exit(-1)
+
             else:#404
                 body = 'Not Found'
                 head = makeHeader(body)
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
                 conn.close()
+                sys.exit(-1)
+
 hostFile()

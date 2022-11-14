@@ -24,7 +24,7 @@ def getResponseCode(req):
             return 200
         else:  # not .htm or .html
             responseStatus = 'Bad Request'
-            return 40
+            return 400
     else:
         responseStatus = 'Not Found'
         return 404
@@ -83,10 +83,12 @@ def hostFunction():
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
                 conn.close()
+                sys.exit()
             else:#400 or the sort
                 body = responseStatus
                 head = makeHeader(body)
                 conn.send(head.encode(encoding="utf-8"))
                 conn.sendall(body.encode(encoding="utf-8"))#Send html response + header
                 conn.close()
+                sys.exit(-1)
 hostFunction()
