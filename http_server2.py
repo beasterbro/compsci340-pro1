@@ -1,4 +1,3 @@
-from fileinput import filename
 import socket
 import sys
 import time
@@ -103,7 +102,6 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
             # Handle outputs
             for w in writable:
                 try:
-                    pass
                     next_msg = outgoingqueue[w].get_nowait()
                 except queue.Empty:
                     outputs.remove(w)

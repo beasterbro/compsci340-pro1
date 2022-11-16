@@ -1,4 +1,3 @@
-from fileinput import filename
 import socket
 import sys
 import os 
@@ -8,6 +7,7 @@ head ='';
 port = int(sys.argv[1])
 responseCode = ''
 responseStatus = ''
+filename = 'rfc2616.html'
 
 def getResponseCode(req):
     global responseStatus
@@ -64,7 +64,7 @@ def hostFile():#TODO: Somehow check the file they are requesting for
             req = conn.recv(1024)
             responseCode = getResponseCode(req.decode())
             if responseCode == 200:
-                f = open(filename + '.html','r')
+                f = open(filename,'r')
                 body = f.read()
                 print(body)
                 head = makeHeader(body)
