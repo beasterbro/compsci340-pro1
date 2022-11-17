@@ -1,7 +1,5 @@
-from ast import parse
 import socket
 import sys
-from json.encoder import JSONEncoder
 import json
 
 
@@ -30,6 +28,9 @@ def getResponseCode(req):
             values = parsed[1] # 'a=3&b=7 '
             if hasValidData(values):
                 return 200
+            else:  # Invalid form of data
+                responseStatus = 'Bad Request'
+                return 400
         else:  # not .htm or .html
             responseStatus = 'Bad Request'
             return 400
