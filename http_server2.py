@@ -119,6 +119,7 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
                 del outgoingqueue[e]
 
 def processRequest(data,conn):
+    global responseCode
     responseCode = getResponseCode(data.decode())
     if responseCode == 200:
         f = open(filename, 'r')
