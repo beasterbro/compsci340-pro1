@@ -10,7 +10,7 @@ responseStatus = ''
 
 # GET /product?a=12&b=60& another =0.5
 def hasValues(val):
-    return any(char.isdigit() for char in val)
+    return any(char.isdigit() for char in val) or val.split('=')[1] == 'inf'
 
 def hasValidData(s):
     values = s.split('&')
@@ -24,13 +24,12 @@ def hasValidData(s):
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
-    print(split) # ['GET /product?a=3&b=7 '
     if '/product' in split[0]:
-        parsed = split[0].split('?')
-        values = parsed[1] # 'a=3&b=7 '
-        print(parsed)
-        if hasValidData(values):
-            return 200
+        if '?' in split[0]:
+            parsed = split[0].split('?')
+            values = parsed[1] # 'a=3&b=7 '
+            if hasValidData(values):
+                return 200
         else:  # not .htm or .html
             responseStatus = 'Bad Request'
             return 400
