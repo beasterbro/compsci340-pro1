@@ -21,7 +21,7 @@ def getResponseCode(req):
     if '/product' in split[0]:
         parsed = split[0].split('=')
         print(parsed)
-        if len(parsed) == 4 and hasValues(parsed):
+        if len(parsed) == 4 and hasValues(parsed):#TODO: this is the validation stuff
             return 200
         else:  # not .htm or .html
             responseStatus = 'Bad Request'

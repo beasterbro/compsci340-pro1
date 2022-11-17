@@ -63,7 +63,7 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         # SOCK_STREAM specifies we are using TCP
         s.bind(('', port))  # listen to all addresses
-        s.setblocking(0)
+        s.setblocking(False)
         s.listen(5)
         readList = [s]
         outputs = []
@@ -76,29 +76,29 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
             # Wait for at least one of the sockets to be
             # ready for processing
             # Handle readList
-            for tempRead in readable:
-                if tempRead is s:
+            for conn in readable:
+                if conn is s:
                     # A "readable" socket is ready to accept a connection
-                    connection, client_address = tempRead.accept()
+                    connection, client_address = conn.accept()
                     print('  connection from', client_address,
                           file=sys.stderr)
-                    connection.setblocking(0)
+                    connection.setblocking(True)
                     readList.append(connection)
                     outgoingqueue[connection] = queue.Queue()
                 else:
-                    data = tempRead.recv(1024)
+                    data = conn.recv(1024)
                     if data:
                     # A readable client socket has data
-                        processRequest(data,tempRead)
+                        processRequest(data,conn)
                         # Add output channel for response
-                        if tempRead not in outputs:
-                         outputs.append(tempRead)
+                        if conn not in outputs:
+                         outputs.append(conn)
                     else: #no data
-                        if tempRead in outputs:
-                            outputs.remove(tempRead)
-                        readList.remove(tempRead)
-                        tempRead.close()
-                        del outgoingqueue[tempRead]
+                        if conn in outputs:
+                            outputs.remove(conn)
+                        readList.remove(conn)
+                        conn.close()
+                        del outgoingqueue[conn]
             # Handle outputs
             for w in writable:
                 try:
@@ -106,7 +106,7 @@ def hostFile():  # TODO: Somehow check the file they are requesting for
                 except queue.Empty:
                     outputs.remove(w)
                 else:
-                    tempRead.send(next_msg)
+                    conn.send(next_msg)
 
             # Handle "exceptional conditions"
             for e in exceptional:
