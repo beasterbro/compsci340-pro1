@@ -27,11 +27,10 @@ def getResponseCode(req):
 
 
 def makeHeader(body):
-    currentTime = time.ctime(time.time()) + "\r\n"
     response_headers = {
         'Content-Type': 'text/html; encoding=utf8',
         'Content-Length': len(body),
-        'Connection': 'keep-alive',#TODO: do not set to connection close here?
+        'Connection': 'close',#TODO: do not set to connection close, or set to keep-alive here?
     }
     global responseCode
     response_headers_raw = ''.join('%s: %s\r\n' % (k, v)
