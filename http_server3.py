@@ -9,19 +9,27 @@ port = int(sys.argv[1])
 responseStatus = ''
 
 # GET /product?a=12&b=60& another =0.5
-def hasValues(parsed):
-    for s in parsed[1:]:
-        if not any(char.isdigit() for char in s):
-            return False
-    return True
+def hasValues(val):
+    return any(char.isdigit() for char in val)
+
+def hasValidData(s):
+    values = s.split('&')
+    va = []
+    for v in values:
+        if hasValues(v):
+            a = v.split('=')
+            va.append(float(a[1]))
+    return len(va) == len(values)
 
 def getResponseCode(req):
     global responseStatus
     split = req.split('HTTP/')
+    print(split) # ['GET /product?a=3&b=7 '
     if '/product' in split[0]:
-        parsed = split[0].split('=')
+        parsed = split[0].split('?')
+        values = parsed[1] # 'a=3&b=7 '
         print(parsed)
-        if len(parsed) == 4 and hasValues(parsed):#TODO: this is the validation stuff
+        if hasValidData(values):
             return 200
         else:  # not .htm or .html
             responseStatus = 'Bad Request'
@@ -52,17 +60,22 @@ def makeHeader(body):
 
 
 def processRequest(req):
-    stringRep = req.split('HTTP/')[0].split('=')
+    split = req.split('HTTP/')
+    parsed = split[0].split('?')
+    sv = parsed[1] # 'a=3&b=7 '
+    values = sv.split('&')
+    va = []
+    for v in values:
+        a = v.split('=')
+        va.append(float(a[1]))
     # ['GET /product?a', '12&b', '60&another', '0.5 ']
-    values = []
-    values.append(float(stringRep[1].split('&')[0]))
-    values.append(float(stringRep[2].split('&')[0]))
-    values.append(float(stringRep[len(stringRep)-1]))
-    return values,values[0]*values[1]*values[2]
+    result = 1
+    for v in va:
+        result *= v
+    return va,result
 
 def buildJson(values,product):
     dic = {"operation": "product","operands":values,"result":product}
-    #return JSONEncoder().encode(dic)
     return json.dumps(dic,indent=4,separators=(',',': '))
 
 
