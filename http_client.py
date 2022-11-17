@@ -1,7 +1,6 @@
 import socket
 import sys
 
-exitCode = '400'
 URL = sys.argv[1]  # sys.argv[1]
 port = 80
 redirectCount = 0
@@ -80,7 +79,7 @@ def makeRequest(url):
             sys.exit(-1)
         if responseCode == '200':
             print(body)
-            pass
+            sys.exit(0)
         elif responseCode == '301' or responseCode == '302':
             global redirectCount
             redirectCount+=1
@@ -88,13 +87,13 @@ def makeRequest(url):
                 tempUrl = getUrl(header)
                 sys.stderr.write("Redirected to: " + tempUrl + '\n')
                 makeRequest(tempUrl.split('\r')[0])
-                sys.exit(0)
+                sys.exit(-1)
             else:
                 sys.exit(-1)
         elif int(responseCode) >= 400:
             sys.stderr.write("Error Connecting with response: " + responseCode)
             print(body)
-            sys.exit(1)
+            sys.exit(-1)
         if responseCode != '302':
             if int(responseCode) < 400:
                 sys.exit(0)
