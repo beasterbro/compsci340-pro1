@@ -10,15 +10,6 @@ redirectCount = 0
 # listen and send over port 80
 
 # gotta build HTTP stuff ourselves from header on down
-
-class HTMLResp:
-
-    def __init__(self):
-        url = ''
-        header = ''
-        body = ''
-        contentType = ''
-    redirectCount = 0
 response = ''
 
 
@@ -49,7 +40,6 @@ def isTopLevel(url):
 # with is easier try catch that auto closes sthings
 # AF_INET is address protocol family
 def makeRequest(url):
-    print(url)
     if  '.jpg' in url:
         sys.stderr.write("No photos allowed >:(")
         sys.exit(-1)
@@ -77,13 +67,9 @@ def makeRequest(url):
         s.connect((host, port))
         req = "GET /{} HTTP/1.1\r\nHost:{}\r\n\r\n".format(spot, host)
         s.send(req.encode('utf-8'))
-        response = b""
-        #window = s.recv(1024)
-        while True:#TODO: images get stuck in this loop for some reason
-            window = s.recv(1024)
-            if len(window) == 0:
-                break
-            response += window
+        #response = b""
+        response = s.recv(1024)
+
         tempResp = response.decode()
         header = getHeader(tempResp)
         contentType = getContentType(header)
